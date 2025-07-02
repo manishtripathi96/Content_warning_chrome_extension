@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Content Warning Extension",
+  "version": "1.0",
+  "description": "Highlights bad words based on filter state.",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
