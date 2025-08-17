@@ -16,7 +16,7 @@ This is my MSc Dissertation project; a "Content Warning Chrome Extension" to aut
 ## How to Install & Run
 
 1. "Download or clone" this repo to your computer.
-2. Open Chrome and navigate to "chrome://extensions'.
+2. Open Chrome and navigate to "chrome://extensions".
 3. Enable "Developer mode" (top right).
 4. Click "Load unpacked" and select the project folder.
 5. You’ll see the warning icon in your browser toolbar.
@@ -28,13 +28,13 @@ This is my MSc Dissertation project; a "Content Warning Chrome Extension" to aut
 ## Project Files
                                                                             
 
-1. manifest.json` - Chrome extension manifest, links scripts, sets permissions, declares the popup window. 
-2. content.js`    - Main detection/filtering logic. Contains the full wordlist, uses regex + NLP for blurring/filter. 
-3. compromise.js` - NLP library used for real context analysis.    
-4. popup.html`    - Handles content/design for the popup interface (toggle button).                                        
-5. popup.js`      - Controls popup functionality - toggles filtering, syncs state with Chrome storage.       
-6. icon.jpg`      - Extension icon shown in the toolbar and popup.                                         
-7. .gitattributes - Git config for text files.                                                             
+- manifest.json  : Chrome extension manifest, links scripts, sets permissions, declares the popup window. 
+- content.js     : Main detection/filtering logic. Contains the full wordlist, uses regex + NLP for blurring/filter. 
+- compromise.js  : NLP library used for real context analysis.    
+- popup.html     : Handles content/design for the popup interface (toggle button).                                        
+- popup.js       : Controls popup functionality - toggles filtering, syncs state with Chrome storage.       
+- icon.jpg       : Extension icon shown in the toolbar and popup.                                         
+- .gitattributes : Git config for text files.                                                             
                                                                
 
 ------
