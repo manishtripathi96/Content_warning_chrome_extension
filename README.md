@@ -8,7 +8,7 @@ This is my MSc Dissertation project; a "Content Warning Chrome Extension" to aut
 
 - Detection : Scans page content for offensive/sensitive words/phrases from a comprehensive list using regex (regular expressions).
 - Context Awareness : Uses the compromise.js NLP library to analyze text. Context—only words used as nouns or verbs (in offensive context) are filtered/blurred.
-- Visual Filtering : Highlights or visually alters flagged content in key content areas.
+- Visual Filtering : Blurs/Highlights or visually alters flagged content in key content areas.
 - Toggle Control : Easily turn the filter on/off using the popup; change takes effect immediately after page reload.
 
 ------
