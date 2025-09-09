@@ -1,522 +1,134 @@
+// content.js — frontend-only blur using compromise + regex + badWords.json
+
 chrome.storage.sync.get("filterEnabled", (data) => {
-  if (!data.filterEnabled) return;
-  // List of Bad/Offensive/Sensitive words acquired from a "Bad-words" API
-  const allWords = [
-    "ahole",
-    "anus",
-    "ash0le",
-    "ash0les",
-    "asholes",
-    "ass",
-    "Ass Monkey",
-    "Assface",
-    "assh0le",
-    "assh0lez",
-    "asshole",
-    "assholes",
-    "assholz",
-    "asswipe",
-    "azzhole",
-    "bassterds",
-    "bastard",
-    "bastards",
-    "bastardz",
-    "basterds",
-    "basterdz",
-    "Biatch",
-    "bitch",
-    "bitches",
-    "Blow Job",
-    "boffing",
-    "butthole",
-    "buttwipe",
-    "c0ck",
-    "c0cks",
-    "c0k",
-    "Carpet Muncher",
-    "cawk",
-    "cawks",
-    "Clit",
-    "cnts",
-    "cntz",
-    "cock",
-    "cockhead",
-    "cock-head",
-    "cocks",
-    "CockSucker",
-    "cock-sucker",
-    "crap",
-    "cum",
-    "cunt",
-    "cunts",
-    "cuntz",
-    "dick",
-    "dild0",
-    "dild0s",
-    "dildo",
-    "dildos",
-    "dilld0",
-    "dilld0s",
-    "dominatricks",
-    "dominatrics",
-    "dominatrix",
-    "dyke",
-    "enema",
-    "f u c k",
-    "f u c k e r",
-    "fag",
-    "fag1t",
-    "faget",
-    "fagg1t",
-    "faggit",
-    "faggot",
-    "fagg0t",
-    "fagit",
-    "fags",
-    "fagz",
-    "faig",
-    "faigs",
-    "fart",
-    "flipping the bird",
-    "fuck",
-    "fucker",
-    "fuckin",
-    "fucking",
-    "fucks",
-    "Fudge Packer",
-    "fuk",
-    "Fukah",
-    "Fuken",
-    "fuker",
-    "Fukin",
-    "Fukk",
-    "Fukkah",
-    "Fukken",
-    "Fukker",
-    "Fukkin",
-    "g00k",
-    "God-damned",
-    "h00r",
-    "h0ar",
-    "h0re",
-    "hells",
-    "hoar",
-    "hoor",
-    "hoore",
-    "jackoff",
-    "jap",
-    "japs",
-    "jerk-off",
-    "jisim",
-    "jiss",
-    "jizm",
-    "jizz",
-    "knob",
-    "knobs",
-    "knobz",
-    "kunt",
-    "kunts",
-    "kuntz",
-    "Lezzian",
-    "Lipshits",
-    "Lipshitz",
-    "masochist",
-    "masokist",
-    "massterbait",
-    "masstrbait",
-    "masstrbate",
-    "masterbaiter",
-    "masterbate",
-    "masterbates",
-    "Motha Fucker",
-    "Motha Fuker",
-    "Motha Fukkah",
-    "Motha Fukker",
-    "Mother Fucker",
-    "Mother Fukah",
-    "Mother Fuker",
-    "Mother Fukkah",
-    "Mother Fukker",
-    "mother-fucker",
-    "Mutha Fucker",
-    "Mutha Fukah",
-    "Mutha Fuker",
-    "Mutha Fukkah",
-    "Mutha Fukker",
-    "n1gr",
-    "nastt",
-    "nigger;",
-    "nigur;",
-    "niiger;",
-    "niigr;",
-    "orafis",
-    "orgasim;",
-    "orgasm",
-    "orgasum",
-    "oriface",
-    "orifice",
-    "orifiss",
-    "packi",
-    "packie",
-    "packy",
-    "paki",
-    "pakie",
-    "paky",
-    "pecker",
-    "peeenus",
-    "peeenusss",
-    "peenus",
-    "peinus",
-    "pen1s",
-    "penas",
-    "penis",
-    "penis-breath",
-    "penus",
-    "penuus",
-    "Phuc",
-    "Phuck",
-    "Phuk",
-    "Phuker",
-    "Phukker",
-    "polac",
-    "polack",
-    "polak",
-    "Poonani",
-    "pr1c",
-    "pr1ck",
-    "pr1k",
-    "pusse",
-    "pussee",
-    "pussy",
-    "puuke",
-    "puuker",
-    "recktum",
-    "rectum",
-    "retard",
-    "sadist",
-    "scank",
-    "schlong",
-    "screwing",
-    "semen",
-    "sex",
-    "sexy",
-    "Sh!t",
-    "sh1t",
-    "sh1ter",
-    "sh1ts",
-    "sh1tter",
-    "sh1tz",
-    "shit",
-    "shits",
-    "shitter",
-    "Shitty",
-    "Shity",
-    "shitz",
-    "Shyt",
-    "Shyte",
-    "Shytty",
-    "Shyty",
-    "skanck",
-    "skank",
-    "skankee",
-    "skankey",
-    "skanks",
-    "Skanky",
-    "slag",
-    "slut",
-    "sluts",
-    "Slutty",
-    "slutz",
-    "son-of-a-bitch",
-    "tit",
-    "turd",
-    "va1jina",
-    "vag1na",
-    "vagiina",
-    "vagina",
-    "vaj1na",
-    "vajina",
-    "vullva",
-    "vulva",
-    "w0p",
-    "wh00r",
-    "wh0re",
-    "whore",
-    "xrated",
-    "xxx",
-    "b!+ch",
-    "bitch",
-    "blowjob",
-    "clit",
-    "arschloch",
-    "fuck",
-    "shit",
-    "ass",
-    "asshole",
-    "b!tch",
-    "b17ch",
-    "b1tch",
-    "bastard",
-    "bi+ch",
-    "boiolas",
-    "buceta",
-    "c0ck",
-    "cawk",
-    "chink",
-    "cipa",
-    "clits",
-    "cock",
-    "cum",
-    "cunt",
-    "dildo",
-    "dirsa",
-    "ejakulate",
-    "fatass",
-    "fcuk",
-    "fuk",
-    "fux0r",
-    "hoer",
-    "hore",
-    "jism",
-    "kawk",
-    "l3itch",
-    "l3i+ch",
-    "masturbate",
-    "masterbat*",
-    "masterbat3",
-    "motherfucker",
-    "s.o.b.",
-    "mofo",
-    "nazi",
-    "nigga",
-    "nigger",
-    "nutsack",
-    "phuck",
-    "pimpis",
-    "pusse",
-    "pussy",
-    "scrotum",
-    "sh!t",
-    "shemale",
-    "shi+",
-    "sh!+",
-    "slut",
-    "smut",
-    "teets",
-    "tits",
-    "boobs",
-    "b00bs",
-    "teez",
-    "testical",
-    "testicle",
-    "titt",
-    "w00se",
-    "jackoff",
-    "wank",
-    "whoar",
-    "whore",
-    "*damn",
-    "*dyke",
-    "*fuck*",
-    "*shit*",
-    "@$$",
-    "amcik",
-    "andskota",
-    "arse*",
-    "assrammer",
-    "ayir",
-    "bi7ch",
-    "bitch*",
-    "bollock*",
-    "breasts",
-    "butt-pirate",
-    "cabron",
-    "cazzo",
-    "chraa",
-    "chuj",
-    "Cock*",
-    "cunt*",
-    "d4mn",
-    "daygo",
-    "dego",
-    "dick*",
-    "dike*",
-    "dupa",
-    "dziwka",
-    "ejackulate",
-    "Ekrem*",
-    "Ekto",
-    "enculer",
-    "faen",
-    "fag*",
-    "fanculo",
-    "fanny",
-    "feces",
-    "feg",
-    "Felcher",
-    "ficken",
-    "fitt*",
-    "Flikker",
-    "foreskin",
-    "Fotze",
-    "Fu(*",
-    "fuk*",
-    "futkretzn",
-    "gook",
-    "guiena",
-    "h0r",
-    "h4x0r",
-    "hell",
-    "helvete",
-    "hoer*",
-    "honkey",
-    "Huevon",
-    "hui",
-    "injun",
-    "jizz",
-    "kanker*",
-    "kike",
-    "klootzak",
-    "kraut",
-    "knulle",
-    "kuk",
-    "kuksuger",
-    "Kurac",
-    "kurwa",
-    "kusi*",
-    "kyrpa*",
-    "lesbo",
-    "mamhoon",
-    "masturbat*",
-    "merd*",
-    "mibun",
-    "monkleigh",
-    "mouliewop",
-    "muie",
-    "mulkku",
-    "muschi",
-    "nazis",
-    "nepesaurio",
-    "nigger*",
-    "orospu",
-    "paska*",
-    "perse",
-    "picka",
-    "pierdol*",
-    "pillu*",
-    "pimmel",
-    "piss*",
-    "pizda",
-    "poontsee",
-    "poop",
-    "porn",
-    "p0rn",
-    "pr0n",
-    "preteen",
-    "pula",
-    "pule",
-    "puta",
-    "puto",
-    "qahbeh",
-    "queef*",
-    "rautenberg",
-    "schaffer",
-    "scheiss*",
-    "schlampe",
-    "schmuck",
-    "screw",
-    "sh!t*",
-    "sharmuta",
-    "sharmute",
-    "shipal",
-    "shiz",
-    "skribz",
-    "skurwysyn",
-    "sphencter",
-    "spic",
-    "spierdalaj",
-    "splooge",
-    "suka",
-    "b00b*",
-    "testicle*",
-    "titt*",
-    "twat",
-    "vittu",
-    "wank*",
-    "wetback*",
-    "wichser",
-    "wop*",
-    "yed",
-    "zabourah"
-  ];
+  if (!data || !data.filterEnabled) return;
 
-  // ==== STEP 1: Split single words & phrases by presence of spaces ====
-  const badWords = allWords.filter(word => /^\w+$/.test(word)); // single word only
-  const badPhrases = allWords.filter(word => /\s/.test(word));  // phrases with space
+  fetch(chrome.runtime.getURL("badWords.json"))
+    .then((r) => r.json())
+    .then((j) => (Array.isArray(j.words) ? j.words : []))
+    .then((allWords) => {
+      // 1) Partition list
+      const isPhrase = (w) => /\s/.test(w);
+      const phrases = allWords.filter(isPhrase);
+      const singles  = allWords.filter((w) => !isPhrase(w));
 
-  // ===== STEP 2: Utility =====
-  function escapeRegExp(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  // Regex for word boundaries
-  const escapedBadWords = badWords.map(escapeRegExp);
-  const wordRegex = new RegExp(`\\b(${escapedBadWords.join('|')})\\b`, 'gi');
-  // Regex for phrases, allow anywhere in text
-  const escapedBadPhrases = badPhrases.map(escapeRegExp);
-  const phraseRegex = new RegExp(`(${escapedBadPhrases.join('|')})`, 'gi');
-
-  // ===== STEP 3: Restrict filtering to content regions =====
-  const selectors = [
-    "#search", ".rc", ".g", "#content", "article", "main"
-  ];
-  const areas = document.querySelectorAll(selectors.join(","));
-
-  // ===== STEP 4: Context awareness rules =====
-  function shouldBlur(match, doc) {
-      return doc.nouns().has(match) || doc.verbs().has(match);
-  }
-  
-
-  // ===== STEP 5: Core Filtering =====
-  function walkAndBlurContextAware(node) {
-    if (node.nodeType === 3) {
-      let original = node.nodeValue;
-      let blurred = original;
-
-      // 1. Blur multi-word Phrases (always as  we cannot do full context parse in compromise for multi-word easily)
-      blurred = blurred.replace(phraseRegex, (match) => {
-        return `<span style="filter: blur(5px);" title="Content warning">${match}</span>`;
-      });
-
-      // 2. Blur bad words only when contextually offensive (Compromise.js)
-      if (blurred !== original) {
-        // If phrases were already matched/blurred, work on remaining
-        original = blurred;
-      }
-      const doc = nlp(original);
-
-      blurred = blurred.replace(wordRegex, (match) => {
-        // Only blur if used in context
-        if (shouldBlur(match, doc)) {
-          return `<span style="filter: blur(5px);" title="Content warning">${match}</span>`;
+      const exact = [];
+      const prefix = []; // terminal '*'
+      for (const w of singles) {
+        if (/\*$/.test(w)) {
+          const base = w.slice(0, -1);
+          if (base) prefix.push(base);
+        } else {
+          exact.push(w);
         }
-        // Otherwise, leave as normal (not blurred)
-        return match;
-      });
-
-      if (blurred !== original) {
-        const span = document.createElement("span");
-        span.innerHTML = blurred;
-        node.parentNode.replaceChild(span, node);
       }
-    } else {
-      for (let child of Array.from(node.childNodes)) {
-        walkAndBlurContextAware(child);
-      }
-    }
-  }
 
-  // ===== STEP 6: Apply to all matched content areas =====
-  areas.forEach(area => walkAndBlurContextAware(area));
+      // 2) Regexes (Unicode-aware)
+      function escapeRegExp(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+      const W = "[\\p{L}\\p{N}_]"; // Unicode word class (letters+numbers+underscore) [14]
+
+      function chunk(arr, n) {
+        const out = [];
+        for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n));
+        return out;
+      }
+      const CHUNK = 400;
+
+      // Phrases anywhere
+      const phraseRegexes = chunk(phrases.map(escapeRegExp), 250)
+        .filter((c) => c.length)
+        .map((c) => new RegExp("(" + c.join("|") + ")", "giu"));
+
+      // Exact single tokens with Unicode boundaries
+      const exactRegexes = chunk(exact.map(escapeRegExp), CHUNK)
+        .filter((c) => c.length)
+        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})(?!${W})`, "giu")); // [15][18]
+
+      // Prefix wildcards: foo* -> (?<!W)fooW*
+      const prefixRegexes = chunk(prefix.map(escapeRegExp), CHUNK)
+        .filter((c) => c.length)
+        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})${W}*`, "giu")); // [15][18]
+
+      // 3) Blur dictionary/right-rail blocks as containers
+      const dictSelectors = [
+        "#rhs",
+        "[data-dobid='hdw']",
+        "[data-dobid='dfn']",
+        ".lr_dct_sf_sen",
+        ".lr_dct_ent"
+      ];
+      function blurDictionaryBlocks(root = document) {
+        root.querySelectorAll(dictSelectors.join(",")).forEach((el) => {
+          if (!el.dataset.cwBlurred) {
+            el.style.filter = "blur(5px)";
+            el.title = "Content warning";
+            el.dataset.cwBlurred = "1";
+          }
+        });
+      }
+
+      // 4) Walk content areas and blur
+      const contentSelectors = ["#search", ".rc", ".g", "#content", "article", "main", "#rso"];
+
+      function blurTextNode(node) {
+        if (node.nodeType !== 3) return;
+        const raw = node.nodeValue;
+        if (!raw || !raw.trim()) return;
+
+        // Optional POS gating via compromise on raw
+        const doc = typeof nlp === "function" ? nlp(raw) : null;
+        const allow = (m) =>
+          doc ? doc.nouns().has(m) || doc.verbs().has(m) || (doc.adjectives && doc.adjectives().has(m)) : true;
+
+        let html = raw;
+
+        // Phrases first
+        for (const re of phraseRegexes) {
+          html = html.replace(re, (m) => `<span style="filter:blur(5px);" title="Content warning">${m}</span>`);
+        }
+        // Exact tokens
+        for (const re of exactRegexes) {
+          html = html.replace(re, (m) =>
+            allow(m) ? `<span style="filter:blur(5px);" title="Content warning">${m}</span>` : m
+          );
+        }
+        // Prefix wildcards
+        for (const re of prefixRegexes) {
+          html = html.replace(re, (m) =>
+            allow(m) ? `<span style="filter:blur(5px);" title="Content warning">${m}</span>` : m
+          );
+        }
+
+        if (html !== raw) {
+          const span = document.createElement("span");
+          span.innerHTML = html;
+          if (node.parentNode) node.parentNode.replaceChild(span, node);
+        }
+      }
+
+      function walk(node) {
+        if (node.nodeType === 3) {
+          blurTextNode(node);
+        } else {
+          const tag = node.tagName;
+          if (tag && /^(SCRIPT|STYLE|NOSCRIPT|IFRAME|CANVAS|SVG|MATH|CODE|PRE|KBD|SAMP)$/.test(tag)) return;
+          if (node.isContentEditable) return;
+          for (const child of Array.from(node.childNodes)) walk(child);
+        }
+      }
+
+      function runOnce(root = document) {
+        blurDictionaryBlocks(root);
+        const areas = root.querySelectorAll(contentSelectors.join(","));
+        if (areas.length) areas.forEach((a) => walk(a));
+        else walk(document.body);
+      }
+
+      runOnce(); // one pass at document_idle for performance [10]
+    })
+    .catch(() => {
+      // Silently ignore if badWords.json can't load
+    });
 });
