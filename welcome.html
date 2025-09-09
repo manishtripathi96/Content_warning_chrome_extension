@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Content Warning Extension</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{
+      --bg:#fafafa; --card:#ffffff; --fg:#222; --muted:#666; --accent:#f39c12;
+      --shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+    html, body { height: 100%; }
+    body{
+      margin:0; background:var(--bg); color:var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      line-height:1.65; -webkit-font-smoothing:antialiased;
+    }
+    
+    .wrap{
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      padding: clamp(8px, 1.0vh + 6px, 18px) 16px clamp(20px, 1.6vh + 8px, 28px);
+    }
+    .card{
+      width: min(1100px, 92vw);
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: clamp(20px, 3vw + 12px, 48px);
+    }
+    h1{
+      margin: 0 0 .2em 0;
+      text-align:center;
+      color: var(--accent);
+    
+      font-size: clamp(36px, 3.2vw + 20px, 56px);
+    }
+    h2{
+      margin: .1em 0 1.2em 0;
+      text-align:center; color:#555; font-weight:600;
+      font-size: clamp(18px, 1.4vw + 14px, 26px);
+    }
+    
+    ul{
+      margin:0 auto;
+      padding-left:1.25em;
+      max-width: 70ch;
+      font-size: clamp(18px, 1.2vw + 14px, 22px);
+    }
+    li{ margin:.85em 0; }
+    .footer{
+      margin-top: clamp(18px, 2vw, 28px);
+      text-align:center;
+      color: var(--muted);
+      font-size: clamp(14px, 1vw + 10px, 16px);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <article class="card" role="main">
+      <h1>👋 Welcome!</h1>
+      <h2>Your new Content Warning Extension is ready</h2>
+      <ul>
+        <li>⚡ Instantly highlights offensive words and phrases.</li>
+        <li>🚨 Warns you about flagged websites before anything loads.</li>
+        <li>👍 You control the filter from the popup at any time.</li>
+        <li>🔒 Everything stays private — nothing is shared.</li>
+      </ul>
+      <p class="footer">Thank you for keeping the web a little safer!</p>
+    </article>
+  </div>
+</body>
+</html>

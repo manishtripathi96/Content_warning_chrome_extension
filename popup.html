@@ -1,11 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Toggle Filter</title>
-</head>
-<body>
-  <button id="toggleFilter">Toggle Filter</button>
-  <script src="popup.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Content Warning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root{
+        --bg:#ffffff; --text:#1f2937; --muted:#6b7280;
+        --brand:#f39c12; --brand-dk:#d9820f; --surface:#fafafa;
+        --ok:#0f9d58; --error:#d93025;
+      }
+      *{box-sizing:border-box}
+      html,body{margin:0;padding:0}
+      body{width:320px;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+      header{padding:14px;background:radial-gradient(120% 120% at 20% -20%,#ffe7c2 0%,#fff 70%);border-bottom:1px solid #eee}
+      .title{margin:0 0 2px;font-weight:700;font-size:16px;letter-spacing:.2px}
+      .sub{margin:0;color:var(--muted);font-size:12px}
+      main{padding:12px 14px 14px}
+      .card{background:var(--surface);border:1px solid #eee;border-radius:10px;padding:12px}
+      .row{margin:10px 0}
+      .split{display:flex;gap:10px}
+      select,textarea{width:100%;border:1px solid #e5e7eb;border-radius:8px;padding:8px 9px;background:#fff;color:var(--text);outline:none}
+      textarea{resize:vertical;min-height:56px}
+      .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:999px;border:none;cursor:pointer;font-weight:600}
+      .btn-primary{background:var(--brand);color:#fff}
+      .btn-primary:hover{background:var(--brand-dk)}
+      .btn-ghost{background:transparent;color:var(--text);border:1px solid #e5e7eb}
+      .pill{background:#fff;border:1px solid #e5e7eb;border-radius:999px;padding:6px 10px;font-weight:600}
+      .small{font-size:11px;color:var(--muted)}
+      .status{font-size:12px;margin-top:6px;min-height:16px}
+      .status.ok{color:var(--ok)}
+      .status.err{color:var(--error)}
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 class="title">Content Warning</h1>
+      <p class="sub">Blur the noise. Flag the risky.</p>
+    </header>
+
+    <main>
+      
+      <div class="card">
+        <div class="row" style="display:flex;align-items:center;gap:8px">
+          <button id="toggleFilter" class="btn btn-ghost" aria-pressed="false">Turn Filter ON</button>
+          <span id="filterState" class="pill">OFF</span>
+        </div>
+        <div class="small">Toggles context-aware blurring on supported pages.</div>
+      </div>
+
+    
+      <div class="card" style="margin-top:12px;">
+        <div class="row">
+          <div class="split">
+            <div style="flex:1;">
+              <label for="flagReason" class="small">Flag reason</label>
+              <select id="flagReason">
+                <option value="bad">Bad</option>
+                <option value="wrong">Wrong</option>
+                <option value="sensitive">Sensitive</option>
+              </select>
+            </div>
+            <div style="width:84px;">
+              <label class="small">&nbsp;</label>
+              <button id="flagUrlBtn" class="btn btn-primary" style="width:100%;">Flag URL</button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <label for="flagNotes" class="small">Notes (optional)</label>
+          <textarea id="flagNotes" placeholder="Add quick context for reviewers"></textarea>
+        </div>
+        <div class="row">
+          <div class="status" id="flagStatus"></div>
+          <div class="small" id="tabMeta"></div>
+        </div>
+      </div>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
 </html>
