@@ -24,12 +24,12 @@
       log("Continue clicked →", target);
       setDbg("Continuing…");
 
-      // Ask SW to allow once + navigate
+      
       chrome.runtime.sendMessage({ type: "PROCEED_TO_TARGET", target }, (res) => {
         const err = chrome.runtime.lastError;
         if (err) {
           log("sendMessage error:", err.message);
-          // Fallback: hard navigate
+        
           location.href = target;
           return;
         }
@@ -38,7 +38,7 @@
           location.href = target;
           return;
         }
-        // SW will update the tab; do nothing.
+      
         log("SW accepted navigation");
       });
     });

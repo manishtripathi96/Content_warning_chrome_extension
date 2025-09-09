@@ -1,10 +1,9 @@
-// ===== CONFIG =====
-const BACKEND_BASE = "http://localhost/url_warn";            // PHP backend base
-const BACKEND_FLAG_URL = `${BACKEND_BASE}/api/flag.php`;     // flag endpoint
-const BACKEND_CHECK_URL = `${BACKEND_BASE}/api/check.php`;   // check endpoint
-// ===================
+const BACKEND_BASE = "http://localhost/url_warn";            
+const BACKEND_FLAG_URL = `${BACKEND_BASE}/api/flag.php`;     
+const BACKEND_CHECK_URL = `${BACKEND_BASE}/api/check.php`;
 
-// ---------- allow-once memory (tabId -> Set(urls)) ----------
+
+
 const ALLOW_ONCE = new Map();
 function allowOnce(tabId, url) {
   if (!ALLOW_ONCE.has(tabId)) ALLOW_ONCE.set(tabId, new Set());
@@ -14,17 +13,17 @@ function allowOnce(tabId, url) {
     if (!s) return;
     s.delete(url);
     if (s.size === 0) ALLOW_ONCE.delete(tabId);
-  }, 60000); // expire after 60s
+  }, 60000);
 }
 
-// ---------- install event ----------
+
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     chrome.tabs.create({ url: chrome.runtime.getURL("welcome.html") });
   }
 });
 
-// ---------- FLAGGING (popup -> backend) ----------
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type !== "flag-url") return;
 
@@ -59,10 +58,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse({ ok: false, error: String(e) });
     });
 
-  return true; // keep port open for async reply
+  return true;
 });
 
-// ---------- HELPER: check flagged URLs ----------
+
 async function checkFlag(url) {
   const u = new URL(BACKEND_CHECK_URL);
   u.searchParams.set("url", url);
@@ -71,11 +70,11 @@ async function checkFlag(url) {
   return res.json();
 }
 
-// ---------- Intercept navigations ----------
+
 chrome.webNavigation.onBeforeNavigate.addListener(async ({ tabId, url, frameId }) => {
-  if (frameId !== 0) return;                  // only main frame
-  if (!/^https?:/i.test(url)) return;         // skip chrome:// etc.
-  if (ALLOW_ONCE.get(tabId)?.has(url)) return; // user clicked Continue
+  if (frameId !== 0) return;                  
+  if (!/^https?:/i.test(url)) return;         
+  if (ALLOW_ONCE.get(tabId)?.has(url)) return; 
 
   try {
     const result = await checkFlag(url);
@@ -89,7 +88,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async ({ tabId, url, frameId }
   }
 });
 
-// ---------- Continue from warning.html ----------
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg?.type === "PROCEED_TO_TARGET" && sender.tab?.id != null) {
     let target = msg.target || "";
@@ -99,12 +98,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       return;
     }
 
-    // allow this navigation once to prevent re-warn loop
+    
     allowOnce(sender.tab.id, target);
 
     chrome.tabs.update(sender.tab.id, { url: target }, () => {
       sendResponse({ ok: true });
     });
-    return true; // async
+    return true; 
   }
 });

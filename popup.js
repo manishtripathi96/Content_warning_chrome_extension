@@ -1,12 +1,12 @@
-// ===== CONFIG =====
-const BACKEND_BASE = "http://localhost/url_warn"; // or "http://127.0.0.1/url_warn"
-const API_KEY = ""; // leave empty unless you enabled keys
-// ==================
 
-// POST to PHP backend
+const BACKEND_BASE = "http://localhost/url_warn";
+const API_KEY = ""; 
+
+
+
 async function flagUrl(url, reason = "user reported", notes = "") {
   const endpoint = `${BACKEND_BASE}/api/flag.php`;
-  console.log("POSTing to:", endpoint); // debug
+  console.log("POSTing to:", endpoint); 
   const res = await fetch(endpoint, {
     method: "POST",
     headers: {
@@ -19,13 +19,13 @@ async function flagUrl(url, reason = "user reported", notes = "") {
     })
   });
   const txt = await res.text();
-  console.log("Response:", res.status, txt); // debug
+  console.log("Response:", res.status, txt); 
   if (!res.ok) throw new Error(`Flag failed ${res.status}: ${txt}`);
   return JSON.parse(txt);
 }
 
 (function () {
-  // Elements
+  
   const btn = document.getElementById("toggleFilter");
   const pill = document.getElementById("filterState");
   const flagBtn = document.getElementById("flagUrlBtn");
@@ -34,7 +34,7 @@ async function flagUrl(url, reason = "user reported", notes = "") {
   const reasonSel = document.getElementById("flagReason");
   const notesEl = document.getElementById("flagNotes");
 
-  // UI helpers
+  
   function setOnStyles() {
     btn.classList.remove("btn-ghost");
     btn.classList.add("btn-primary");
@@ -57,12 +57,12 @@ async function flagUrl(url, reason = "user reported", notes = "") {
   }
   function renderState(isOn) { isOn ? setOnStyles() : setOffStyles(); }
 
-  // Load current filter state
+  
   chrome.storage.sync.get({ filterEnabled: false }, (data) => {
     renderState(!!data.filterEnabled);
   });
 
-  // Toggle filter
+  
   btn.addEventListener("click", () => {
     chrome.storage.sync.get({ filterEnabled: false }, (data) => {
       const next = !data.filterEnabled;
@@ -77,7 +77,7 @@ async function flagUrl(url, reason = "user reported", notes = "") {
     });
   });
 
-  // Show active tab host
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const t = tabs && tabs[0];
     if (t && t.url) {
@@ -88,7 +88,7 @@ async function flagUrl(url, reason = "user reported", notes = "") {
     }
   });
 
-  // Wire Flag button
+
   flagBtn.addEventListener("click", async () => {
     flagStatus.className = "status";
     flagStatus.textContent = "Flagging…";

@@ -1,4 +1,4 @@
-// content.js — frontend-only blur using compromise + regex + badWords.json
+
 
 chrome.storage.sync.get("filterEnabled", (data) => {
   if (!data || !data.filterEnabled) return;
@@ -7,13 +7,13 @@ chrome.storage.sync.get("filterEnabled", (data) => {
     .then((r) => r.json())
     .then((j) => (Array.isArray(j.words) ? j.words : []))
     .then((allWords) => {
-      // 1) Partition list
+      
       const isPhrase = (w) => /\s/.test(w);
       const phrases = allWords.filter(isPhrase);
       const singles  = allWords.filter((w) => !isPhrase(w));
 
       const exact = [];
-      const prefix = []; // terminal '*'
+      const prefix = [];
       for (const w of singles) {
         if (/\*$/.test(w)) {
           const base = w.slice(0, -1);
@@ -23,11 +23,11 @@ chrome.storage.sync.get("filterEnabled", (data) => {
         }
       }
 
-      // 2) Regexes (Unicode-aware)
+    
       function escapeRegExp(str) {
         return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }
-      const W = "[\\p{L}\\p{N}_]"; // Unicode word class (letters+numbers+underscore) [14]
+      const W = "[\\p{L}\\p{N}_]";
 
       function chunk(arr, n) {
         const out = [];
@@ -36,22 +36,22 @@ chrome.storage.sync.get("filterEnabled", (data) => {
       }
       const CHUNK = 400;
 
-      // Phrases anywhere
+    
       const phraseRegexes = chunk(phrases.map(escapeRegExp), 250)
         .filter((c) => c.length)
         .map((c) => new RegExp("(" + c.join("|") + ")", "giu"));
 
-      // Exact single tokens with Unicode boundaries
+      
       const exactRegexes = chunk(exact.map(escapeRegExp), CHUNK)
         .filter((c) => c.length)
-        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})(?!${W})`, "giu")); // [15][18]
+        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})(?!${W})`, "giu"));
 
-      // Prefix wildcards: foo* -> (?<!W)fooW*
+      
       const prefixRegexes = chunk(prefix.map(escapeRegExp), CHUNK)
         .filter((c) => c.length)
-        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})${W}*`, "giu")); // [15][18]
+        .map((c) => new RegExp(`(?<!${W})(?:${c.join("|")})${W}*`, "giu"));
 
-      // 3) Blur dictionary/right-rail blocks as containers
+      
       const dictSelectors = [
         "#rhs",
         "[data-dobid='hdw']",
@@ -69,7 +69,7 @@ chrome.storage.sync.get("filterEnabled", (data) => {
         });
       }
 
-      // 4) Walk content areas and blur
+      
       const contentSelectors = ["#search", ".rc", ".g", "#content", "article", "main", "#rso"];
 
       function blurTextNode(node) {
@@ -77,24 +77,24 @@ chrome.storage.sync.get("filterEnabled", (data) => {
         const raw = node.nodeValue;
         if (!raw || !raw.trim()) return;
 
-        // Optional POS gating via compromise on raw
+      
         const doc = typeof nlp === "function" ? nlp(raw) : null;
         const allow = (m) =>
           doc ? doc.nouns().has(m) || doc.verbs().has(m) || (doc.adjectives && doc.adjectives().has(m)) : true;
 
         let html = raw;
 
-        // Phrases first
+      
         for (const re of phraseRegexes) {
           html = html.replace(re, (m) => `<span style="filter:blur(5px);" title="Content warning">${m}</span>`);
         }
-        // Exact tokens
+      
         for (const re of exactRegexes) {
           html = html.replace(re, (m) =>
             allow(m) ? `<span style="filter:blur(5px);" title="Content warning">${m}</span>` : m
           );
         }
-        // Prefix wildcards
+      
         for (const re of prefixRegexes) {
           html = html.replace(re, (m) =>
             allow(m) ? `<span style="filter:blur(5px);" title="Content warning">${m}</span>` : m
@@ -126,9 +126,9 @@ chrome.storage.sync.get("filterEnabled", (data) => {
         else walk(document.body);
       }
 
-      runOnce(); // one pass at document_idle for performance [10]
+      runOnce();
     })
     .catch(() => {
-      // Silently ignore if badWords.json can't load
+  
     });
 });
